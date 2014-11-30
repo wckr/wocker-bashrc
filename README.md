@@ -7,20 +7,20 @@ The .bashrc file for VCDW's CoreOS
 
 Run a VCDW container named vcdw
 ```
-$ vcdw
+$ vcdwrun
 ```
 
-Run a VCDW container and add a name
+Run a VCDW container and use another name
 ```
 $ vcdwrun <mycontainer>
 ```
 
 Stop all running containers
 ```
-$ vcdwstopall
+$ vcdwstop
 ```
 
 Force remove all containers
 ```
-$ vcdwrmall
+$ vcdwrm
 ```
