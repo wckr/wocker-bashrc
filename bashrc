@@ -1,6 +1,6 @@
 # Run a VCDW container named "vcdw" by default
 vcdwrun() {
-  docker run --name $(vcdw) -p 80:80 -v /home/core/share:/share:rw -d ixkaito/vcdw;
+  docker run --name ${1:-vcdw} -p 80:80 -v /home/core/share:/share:rw -d ixkaito/vcdw;
 }
 
 # Stop all containers or containers selected
