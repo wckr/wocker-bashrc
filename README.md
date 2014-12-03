@@ -10,17 +10,22 @@ Run a VCDW container named vcdw
 $ vcdwrun
 ```
 
-Run a VCDW container and use another name
+Run and name a VCDW container
 ```
-$ vcdwrun <mycontainer>
+$ vcdwrun <containername>
+```
+
+Use another image to run and name a VCDW container
+```
+$ vcdwrun <containername> <image>
 ```
 
 Stop all running containers
 ```
-$ vcdwstop
+$ dockerstopall
 ```
 
 Force remove all containers
 ```
-$ vcdwrm
+$ dockerrmall
 ```
