@@ -1,9 +1,9 @@
 # Run a VCDW container named "vcdw" by default
 vcdwrun() {
   docker run -d ${2:-ixkaito/vcdw} && \
-  docker cp $(docker ps -l -q):/var/www/wordpress /home/core && \
+  docker cp $(docker ps -l -q):/var/www/wordpress /home/core/share && \
   docker rm -f $(docker ps -l -q) && \
-  docker run -d --name ${1:-vcdw} -p 80:80 -v /home/core/wordpress:/var/www/wordpress:rw ${2:-ixkaito/vcdw}
+  docker run -d --name ${1:-vcdw} -p 80:80 -v /home/core/share/wordpress:/var/www/wordpress:rw ${2:-ixkaito/vcdw}
 }
 
 # Stop all running containers
