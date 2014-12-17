@@ -1,12 +1,12 @@
 # Run a VCDW container named "vcdw" by default
 vcdwrun() {
   if [ -f ~/share/wordpress/wp-config.php ]; then
-    docker run -d --name ${1:-vcdw} -p 80:80 -v /home/core/share/wordpress:/var/www/wordpress:rw ${2:-ixkaito/vcdw}
+    docker run -d --name ${1:-vcdw} -p 80:80 -v ~/share/wordpress:/var/www/wordpress:rw ${2:-ixkaito/vcdw}
   else
     docker run -d ${2:-ixkaito/vcdw} && \
-    docker cp $(docker ps -l -q):/var/www/wordpress /home/core/share && \
+    docker cp $(docker ps -l -q):/var/www/wordpress ~/share && \
     docker rm -f $(docker ps -l -q) && \
-    docker run -d --name ${1:-vcdw} -p 80:80 -v /home/core/share/wordpress:/var/www/wordpress:rw ${2:-ixkaito/vcdw}
+    docker run -d --name ${1:-vcdw} -p 80:80 -v ~/share/wordpress:/var/www/wordpress:rw ${2:-ixkaito/vcdw}
   fi
 }
 
