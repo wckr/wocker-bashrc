@@ -1,23 +1,23 @@
-vcdw-bashrc
+wocker-bashrc
 ===========
 
-The .bashrc file for VCDW's CoreOS
+The .bashrc file for Wocker's CoreOS
 
-## Shortcut commands for VCDW
+## Shortcut commands for Wocker
 
-Run a VCDW container named vcdw
+Run a Wocker container named wocker
 ```
-$ vcdwrun
-```
-
-Run and name a VCDW container
-```
-$ vcdwrun <containername>
+$ wocker
 ```
 
-Use another image to run and name a VCDW container
+Run and name a Wocker container
 ```
-$ vcdwrun <containername> <image>
+$ wocker <containername>
+```
+
+Use another image to run and name a Wocker container
+```
+$ wocker <containername> <image>
 ```
 
 Stop all running containers
