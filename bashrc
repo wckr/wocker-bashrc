@@ -46,7 +46,7 @@ wocker() {
   elif [ "$1" = 'stop' ]; then
 
     # Stop all running containers
-    if [ "$2" = '--all' || "$2" = '-a' ]; then
+    if [[ "$2" = '--all' || "$2" = '-a' ]]; then
       CONTAINER='$(docker ps -a -q)'
     else
       CONTAINER=$2
@@ -60,7 +60,7 @@ wocker() {
   elif [ "$1" = 'kill' ]; then
 
     # Kill all running containers
-    if [ "$2" = '--all' || "$2" = '-a' ]; then
+    if [[ "$2" = '--all' || "$2" = '-a' ]]; then
       CONTAINER='$(docker ps -a -q)'
     else
       CONTAINER=$2
@@ -74,7 +74,7 @@ wocker() {
   elif [ "$1" = 'rm' ]; then
 
     # Force remove all containers
-    if [ "$2" = '--all' || "$2" = '-a' ]; then
+    if [[ "$2" = '--all' || "$2" = '-a' ]]; then
       CONTAINER='$(docker ps -a -q)'
     else
       CONTAINER=$2
@@ -85,7 +85,7 @@ wocker() {
   #
   # $ wocker usage
   #
-  elif [ "$1" = '--help' || "$1" = '-h' ]; then
+  elif [[ "$1" = '--help' || "$1" = '-h' ]]; then
     wocker_commands
 
   #
