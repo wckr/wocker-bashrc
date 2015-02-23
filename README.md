@@ -1,31 +1,82 @@
 wocker-bashrc
 ===========
 
-The .bashrc file for Wocker's CoreOS
+The .bashrc file for Wocker.
 
 ## Shortcut commands for Wocker
 
-Run a Wocker container named wocker
+### Show the usage
 ```
-$ wocker
+$ wocker --help
 ```
-
-Run and name a Wocker container
+or
 ```
-$ wocker <containername>
-```
-
-Use another image to run and name a Wocker container
-```
-$ wocker <containername> <image>
+$ wocker -h
 ```
 
-Stop all running containers
+### Run a new Wocker container named "wocker" using "ixkaito/wocker:latest"
 ```
-$ dockerstopall
+$ wocker run
 ```
 
-Force remove all containers
+### Run a new Wocker container and assign another name
 ```
-$ dockerrmall
+$ wocker run --name <containername>
+```
+or
+```
+$ wocker run --name=<containername>
+```
+e.g.
+```
+$ wocker run --name wordpress
+```
+
+### Use another docker image to run a new Wocker container
+```
+$ wocker run <image>
+```
+e.g.
+```
+$ wocker run ixkaito/wocker:centos6
+```
+
+### Use another docker image to run a new Wocker container and assign another name
+```
+$ wocker run --name <containername> <image>
+```
+or
+```
+$ wocker run --name=<containername> <image>
+```
+e.g.
+```
+$ wocker run --name wordpress ixkaito/wocker:centos6
+```
+
+### Stop all running containers
+```
+$ wocker stop --all
+```
+or
+```
+$ wocker stop -a
+```
+
+### Kill all running containers
+```
+$ wocker kill --all
+```
+or
+```
+$ wocker kill -a
+```
+
+### Force remove all containers
+```
+$ wocker rm --all
+```
+or
+```
+$ wocker rm -a
 ```
