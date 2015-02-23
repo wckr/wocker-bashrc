@@ -1,4 +1,6 @@
 wocker_commands() {
+  echo 'Usage: wocker COMMAND'
+  echo ''
   echo 'Commands:'
   echo '    run [--name=""] [Image]  Run a container.'
   echo '                             Default container name: wocker'
@@ -10,13 +12,13 @@ wocker_commands() {
 
 wocker() {
 
-  NAME='wocker'
-  IMAGE='ixkaito/wocker:latest'
-
   #
   # $ wocker run
   #
   if [ "$1" = 'run' ]; then
+
+    NAME='wocker'
+    IMAGE='ixkaito/wocker:latest'
 
     if [ "$2" = '--name' ]; then
       NAME=$3
@@ -44,9 +46,13 @@ wocker() {
   elif [ "$1" = 'stop' ]; then
 
     # Stop all running containers
-    if [ "$2" = 'all' ]; then
-      docker stop $(docker ps -a -q);
+    if [ "$2" = '--all' || "$2" = '-a' ]; then
+      CONTAINER='$(docker ps -a -q)'
+    else
+      CONTAINER=$2
     fi
+
+    docker stop $CONTAINER
 
   #
   # $ wocker kill
@@ -54,9 +60,13 @@ wocker() {
   elif [ "$1" = 'kill' ]; then
 
     # Kill all running containers
-    if [ "$2" = 'all' ]; then
-      docker kill $(docker ps -a -q);
+    if [ "$2" = '--all' || "$2" = '-a' ]; then
+      CONTAINER='$(docker ps -a -q)'
+    else
+      CONTAINER=$2
     fi
+
+    docker kill $CONTAINER
 
   #
   # $ wocker rm
@@ -64,9 +74,13 @@ wocker() {
   elif [ "$1" = 'rm' ]; then
 
     # Force remove all containers
-    if [ "$2" = 'all' ]; then
-      docker rm -f $(docker ps -a -q);
+    if [ "$2" = '--all' || "$2" = '-a' ]; then
+      CONTAINER='$(docker ps -a -q)'
+    else
+      CONTAINER=$2
     fi
+
+    docker rm -f $CONTAINER
 
   #
   # $ wocker usage
