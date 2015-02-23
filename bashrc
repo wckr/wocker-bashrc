@@ -1,13 +1,22 @@
-wocker_commands() {
+wocker_usage() {
   echo 'Usage: wocker COMMAND'
   echo ''
   echo 'Commands:'
-  echo '    run [--name=""] [Image]  Run a container.'
+  echo '    run [--name=""] [IMAGE]  Run a new container.'
   echo '                             Default container name: wocker'
   echo '                             Default docker image: ixkaito/wocker:latest'
-  echo '    stop all                 Stop all running containers.'
-  echo '    kill all                 Kill all running containers.'
-  echo '    rm all                   Force remove all containers.'
+  echo ''
+  echo '    stop CONTAINER           Stop a running container by sending SIGTERM and then SIGKILL after a grace period.'
+  echo '                             "CONTAINER" can be a container name or container ID.'
+  echo '    stop -a|--all            Stop all running containers.'
+  echo ''
+  echo '    kill CONTAINER           Kill a running container using SIGKILL or a specified signal.'
+  echo '                             "CONTAINER" can be a container name or container ID.'
+  echo '    kill -a|--all            Kill all running containers.'
+  echo ''
+  echo '    rm CONTAINER             Force remove one or more containers.'
+  echo '                             "CONTAINER" can be container names or container IDs.'
+  echo '    rm -a|--all              Force remove all containers.'
 }
 
 wocker() {
@@ -86,12 +95,12 @@ wocker() {
   # $ wocker usage
   #
   elif [[ "$1" = '--help' || "$1" = '-h' ]]; then
-    wocker_commands
+    wocker_usage
 
   #
   # $ wocker usage
   #
   else
-    wocker_commands
+    wocker_usage
   fi
 }
