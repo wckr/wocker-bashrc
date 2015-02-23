@@ -21,32 +21,33 @@ wocker_usage() {
 
 wocker() {
 
+  local name='wocker'
+  local image='ixkaito/wocker:latest'
+  local container
+
   #
   # $ wocker run
   #
   if [ "$1" = 'run' ]; then
 
-    NAME='wocker'
-    IMAGE='ixkaito/wocker:latest'
-
     if [ "$2" = '--name' ]; then
-      NAME=$3
-      IMAGE=${4:-$IMAGE}
-    elif [[ "$2" =~ ^--name=(.*)$ ]] ; then
-      NAME=${BASH_REMATCH[1]}
-      IMAGE=${3:-$IMAGE}
+      name=$3
+      image=${4:-$image}
+    elif [[ "$2" =~ ^--name=(.*)$ ]]; then
+      name=${BASH_REMATCH[1]}
+      image=${3:-$image}
     else
-      IMAGE=${2:-$IMAGE}
+      image=${2:-$image}
     fi
 
     # Run a Wocker container named "wocker" using "ixkaito/wocker:latest" by default
     if [ -f ~/data/wordpress/wp-config.php ]; then
-      docker run -d --name $NAME -p 80:80 -v ~/data/wordpress:/var/www/wordpress:rw $IMAGE
+      docker run -d --name $name -p 80:80 -v ~/data/wordpress:/var/www/wordpress:rw $image
     else
-      docker run -d $IMAGE && \
+      docker run -d $image && \
       docker cp $(docker ps -l -q):/var/www/wordpress ~/data && \
       docker rm -f $(docker ps -l -q) && \
-      docker run -d --name $NAME -p 80:80 -v ~/data/wordpress:/var/www/wordpress:rw $IMAGE
+      docker run -d --name $name -p 80:80 -v ~/data/wordpress:/var/www/wordpress:rw $image
     fi
 
   #
@@ -56,12 +57,12 @@ wocker() {
 
     # Stop all running containers
     if [[ "$2" = '--all' || "$2" = '-a' ]]; then
-      CONTAINER='$(docker ps -a -q)'
+      container=$(docker ps -a -q)
     else
-      CONTAINER=$2
+      container=$2
     fi
 
-    docker stop $CONTAINER
+    docker stop $container
 
   #
   # $ wocker kill
@@ -70,12 +71,12 @@ wocker() {
 
     # Kill all running containers
     if [[ "$2" = '--all' || "$2" = '-a' ]]; then
-      CONTAINER='$(docker ps -a -q)'
+      container=$(docker ps -a -q)
     else
-      CONTAINER=$2
+      container=$2
     fi
 
-    docker kill $CONTAINER
+    docker kill $container
 
   #
   # $ wocker rm
@@ -84,12 +85,12 @@ wocker() {
 
     # Force remove all containers
     if [[ "$2" = '--all' || "$2" = '-a' ]]; then
-      CONTAINER='$(docker ps -a -q)'
+      container=$(docker ps -a -q)
     else
-      CONTAINER=$2
+      container=$2
     fi
 
-    docker rm -f $CONTAINER
+    docker rm -f $container
 
   #
   # $ wocker usage
