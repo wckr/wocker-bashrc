@@ -2,23 +2,21 @@ wocker_usage() {
   echo 'Usage: wocker COMMAND'
   echo ''
   echo 'Commands:'
-  echo '    run [--name=""] [IMAGE]  Run a new container.'
-  echo '                             Default container name: wocker'
-  echo '                             Default docker image: ixkaito/wocker:latest'
-  echo ''
-  echo '    stop CONTAINER           Stop a running container by sending SIGTERM and then SIGKILL after a grace period.'
-  echo '                             "CONTAINER" can be a container name or container ID.'
-  echo ''
-  echo '    kill CONTAINER           Kill a running container using SIGKILL or a specified signal.'
-  echo '                             "CONTAINER" can be a container name or container ID.'
-  echo ''
-  echo '    rm CONTAINER             Force remove one or more containers.'
-  echo '                             "CONTAINER" can be container names or container IDs.'
-  echo '    rm -a|--all              Force remove all containers.'
+  echo '    destroy                                     Force remove all containers and related files.'
+  echo '    kill CONTAINER                              Kill a running container using SIGKILL or a specified signal.'
+  echo '    rm [-f|--force] CONTAINER [CONTAINER...]    Remove one or more containers.'
+  echo '                                                  [-f, --force]  Force the removal of a running container (uses SIGKILL)'
+  echo '    run [--name=""] [IMAGE]                     Run a new container.'
+  echo '                                                  Default container name: wocker'
+  echo '                                                  Default docker image: ixkaito/wocker:latest'
+  echo '    start CONTAINER                             Restart a stopped container.'
+  echo '    stop CONTAINER                              Stop a running container by sending SIGTERM and then SIGKILL after a grace period.'
+  echo '    version | --version | -v                    Show the Wocker version information.'
 }
 
 wocker() {
 
+  local version='0.1a'
   local name='wocker'
   local image='ixkaito/wocker:latest'
   local ports
@@ -29,6 +27,7 @@ wocker() {
   local containers
   local force
   local running
+  local confirmation
 
   case "$1" in
 
@@ -37,7 +36,7 @@ wocker() {
     #
     'run' )
 
-      if [ "$2" = '--name' ]; then
+      if [[ "$2" = '--name' ]]; then
         name=$3
         image=${4:-$image}
       elif [[ "$2" =~ ^--name=(.*)$ ]]; then
@@ -47,7 +46,7 @@ wocker() {
         image=${2:-$image}
       fi
 
-      if [ $(docker ps -q) ]; then
+      if [[ $(docker ps -q) ]]; then
         ports=$(docker inspect --format='{{.NetworkSettings.Ports}}' $(docker ps -q))
       fi
 
@@ -114,7 +113,7 @@ wocker() {
 
       for cid in $cids; do
         running=$(docker inspect --format='{{.State.Running}}' $cid)
-        if [ $running = true ]; then
+        if [[ $running = true ]]; then
           dirname="wordpress"
         else
           dirname=$(docker inspect --format='{{.Name}}' $cid)
@@ -134,34 +133,54 @@ wocker() {
     #
     'destroy' )
 
-      for cid in $(docker ps -a -q); do
-        running=$(docker inspect --format='{{.State.Running}}' $cid)
-        if [ $running = true ]; then
-          dirname="wordpress"
-        else
-          dirname=$(docker inspect --format='{{.Name}}' $cid)
-          dirname=${cid:0:12}_${dirname#*/}
-        fi
-        rm -rf /home/core/data/${dirname}
-      done
+      echo 'Are you sure you want to remove all containers and related files? [y/N]'
+      read confirmation
 
-      docker rm -f $(docker ps -a -q)
-
+      case $confirmation in
+        'y' )
+          if [[ $(docker ps -a -q) ]]; then
+            for cid in $(docker ps -a -q); do
+              running=$(docker inspect --format='{{.State.Running}}' $cid)
+              if [[ $running = true ]]; then
+                dirname="wordpress"
+              else
+                dirname=$(docker inspect --format='{{.Name}}' $cid)
+                dirname=${cid:0:12}_${dirname#*/}
+              fi
+              rm -rf /home/core/data/${dirname}
+            done
+            docker rm -f $(docker ps -a -q)
+          fi
+          ;;
+        * )
+          echo 'Containers and file will not be removed, since the confirmation was declined.'
+          ;;
+      esac
       ;;
 
     #
-    # $ wocker usage
+    # $ wocker --help | $ wocker -h
     #
     '--help' | '-h' )
       wocker_usage
       ;;
 
-    'attach' | 'build' | 'commit' | 'cp' | 'create' | 'diff' | 'events' | 'exec' | 'export' | 'history' | 'images' | 'import' | 'info' | 'inspect' | 'load' | 'login' | 'logout' | 'logs' | 'port' | 'pause' | 'ps' | 'pull' | 'push' | 'restart' | 'rmi' | 'save' | 'search' | 'tag' | 'top' | 'unpause' | 'version' | 'wait' )
+    #
+    # $ wocker version | $ wocker --version | $ wocker -v
+    #
+    'version' | '--version' | '-v' )
+      echo "Version: $version"
+      ;;
+
+    #
+    # Other Docker commands
+    #
+    'attach' | 'build' | 'commit' | 'cp' | 'create' | 'diff' | 'events' | 'exec' | 'export' | 'history' | 'images' | 'import' | 'info' | 'inspect' | 'load' | 'login' | 'logout' | 'logs' | 'port' | 'pause' | 'ps' | 'pull' | 'push' | 'restart' | 'rmi' | 'save' | 'search' | 'tag' | 'top' | 'unpause' | 'wait' )
       docker $@
       ;;
 
     #
-    # $ wocker usage
+    # Show Wocker usage
     #
     * )
       wocker_usage
