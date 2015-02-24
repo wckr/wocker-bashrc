@@ -17,6 +17,7 @@ wocker_usage() {
 wocker() {
 
   local version='0.1a'
+  local red=31
   local name='wocker'
   local image='ixkaito/wocker:latest'
   local ports
@@ -51,7 +52,8 @@ wocker() {
       fi
 
       if [[ $ports =~ "HostIp:0.0.0.0 HostPort:80" ]]; then
-        echo "Cannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated"
+        echo -e "\033[${red}mCannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
+        # echo "Cannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated"
 
       # Run a Wocker container named "wocker" using "ixkaito/wocker:latest" by default
       elif [[ -f ~/data/wordpress/wp-config.php ]]; then
@@ -93,11 +95,11 @@ wocker() {
       fi
 
       if [[ $ports =~ "HostIp:0.0.0.0 HostPort:80" ]]; then
-        echo "Cannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated"
+        echo -e "\033[${red}mCannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
       elif [[ -f ~/data/wordpress/wp-config.php ]]; then
-        echo 'Please move or delete current ~/data/wordpress directory before restarting a stopped container.'
+        echo -e "\033[${red}mPlease move or delete current ~/data/wordpress directory before restarting a stopped container.\033[m"
       elif [[ ! -f ~/data/${dirname}/wp-config.php ]]; then
-        echo "~/data/${dirname}: No such directory or files."
+        echo -e "\033[${red}m~/data/${dirname}: No such directory or files.\033[m"
       else
         mv ~/data/${dirname} ~/data/wordpress && \
         docker start $cid
