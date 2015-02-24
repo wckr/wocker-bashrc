@@ -8,11 +8,9 @@ wocker_usage() {
   echo ''
   echo '    stop CONTAINER           Stop a running container by sending SIGTERM and then SIGKILL after a grace period.'
   echo '                             "CONTAINER" can be a container name or container ID.'
-  echo '    stop -a|--all            Stop all running containers.'
   echo ''
   echo '    kill CONTAINER           Kill a running container using SIGKILL or a specified signal.'
   echo '                             "CONTAINER" can be a container name or container ID.'
-  echo '    kill -a|--all            Kill all running containers.'
   echo ''
   echo '    rm CONTAINER             Force remove one or more containers.'
   echo '                             "CONTAINER" can be container names or container IDs.'
@@ -23,6 +21,7 @@ wocker() {
 
   local name='wocker'
   local image='ixkaito/wocker:latest'
+  local ports
   local cid
   local cids
   local dirname
@@ -48,8 +47,15 @@ wocker() {
         image=${2:-$image}
       fi
 
+      if [ $(docker ps -q) ]; then
+        ports=$(docker inspect --format='{{.NetworkSettings.Ports}}' $(docker ps -q))
+      fi
+
+      if [[ $ports =~ "HostIp:0.0.0.0 HostPort:80" ]]; then
+        echo "Cannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated"
+
       # Run a Wocker container named "wocker" using "ixkaito/wocker:latest" by default
-      if [ -f ~/data/wordpress/wp-config.php ]; then
+      elif [ -f ~/data/wordpress/wp-config.php ]; then
         docker run -d --name $name -p 80:80 -v ~/data/wordpress:/var/www/wordpress:rw $image
       else
         docker run -d --name $name $image && \
@@ -148,6 +154,10 @@ wocker() {
     #
     '--help' | '-h' )
       wocker_usage
+      ;;
+
+    'attach' | 'build' | 'commit' | 'cp' | 'create' | 'diff' | 'events' | 'exec' | 'export' | 'history' | 'images' | 'import' | 'info' | 'inspect' | 'load' | 'login' | 'logout' | 'logs' | 'port' | 'pause' | 'ps' | 'pull' | 'push' | 'restart' | 'rmi' | 'save' | 'search' | 'tag' | 'top' | 'unpause' | 'version' | 'wait' )
+      docker $@
       ;;
 
     #
