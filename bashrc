@@ -54,7 +54,7 @@ wocker() {
         echo "Cannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated"
 
       # Run a Wocker container named "wocker" using "ixkaito/wocker:latest" by default
-      elif [ -f ~/data/wordpress/wp-config.php ]; then
+      elif [[ -f ~/data/wordpress/wp-config.php ]]; then
         docker run -d --name $name -p 80:80 -v ~/data/wordpress:/var/www/wordpress:rw $image
       else
         docker run -d --name $name $image && \
@@ -75,7 +75,7 @@ wocker() {
       dirname=${cid:0:12}_${dirname#*/}
 
       docker $1 $cid && \
-      mv /home/core/data/wordpress /home/core/data/${dirname}
+      mv ~/data/wordpress ~/data/${dirname}
 
       ;;
 
@@ -88,8 +88,20 @@ wocker() {
       dirname=$(docker inspect --format='{{.Name}}' $2)
       dirname=${cid:0:12}_${dirname#*/}
 
-      mv /home/core/data/${dirname} /home/core/data/wordpress && \
-      docker start $cid
+      if [[ $(docker ps -q) ]]; then
+        ports=$(docker inspect --format='{{.NetworkSettings.Ports}}' $(docker ps -q))
+      fi
+
+      if [[ $ports =~ "HostIp:0.0.0.0 HostPort:80" ]]; then
+        echo "Cannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated"
+      elif [[ -f ~/data/wordpress/wp-config.php ]]; then
+        echo 'Please move or delete current ~/data/wordpress directory before restarting a stopped container.'
+      elif [[ ! -f ~/data/${dirname}/wp-config.php ]]; then
+        echo "~/data/${dirname}: No such directory or files."
+      else
+        mv ~/data/${dirname} ~/data/wordpress && \
+        docker start $cid
+      fi
 
       ;;
 
@@ -122,7 +134,7 @@ wocker() {
 
         docker rm --force=${force} $cid
         if [[ $force = true || $running = false ]]; then
-          rm -rf /home/core/data/${dirname}
+          rm -rf ~/data/${dirname}
         fi
       done
 
@@ -147,7 +159,7 @@ wocker() {
                 dirname=$(docker inspect --format='{{.Name}}' $cid)
                 dirname=${cid:0:12}_${dirname#*/}
               fi
-              rm -rf /home/core/data/${dirname}
+              rm -rf ~/data/${dirname}
             done
             docker rm -f $(docker ps -a -q)
           fi
