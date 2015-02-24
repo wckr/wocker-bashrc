@@ -29,6 +29,7 @@ wocker() {
   local dirnames
   local containers
   local force
+  local running
 
   case "$1" in
 
@@ -66,10 +67,10 @@ wocker() {
 
       cid=$(docker inspect --format='{{.Id}}' $2)
       dirname=$(docker inspect --format='{{.Name}}' $2)
-      dirname=${dirname#*/}
+      dirname=${cid:0:12}_${dirname#*/}
 
       docker $1 $cid && \
-      mv /home/core/data/wordpress /home/core/data/${cid:0:12}_${dirname}
+      mv /home/core/data/wordpress /home/core/data/${dirname}
 
       ;;
 
@@ -80,9 +81,9 @@ wocker() {
 
       cid=$(docker inspect --format='{{.Id}}' $2)
       dirname=$(docker inspect --format='{{.Name}}' $2)
-      dirname=${dirname#*/}
+      dirname=${cid:0:12}_${dirname#*/}
 
-      mv /home/core/data/${cid:0:12}_${dirname} /home/core/data/wordpress && \
+      mv /home/core/data/${dirname} /home/core/data/wordpress && \
       docker start $cid
 
       ;;
@@ -94,24 +95,30 @@ wocker() {
 
       case "$2" in
         '-f' | '--force' | '--force=true' )
-          force='-f'
+          force=true
           containers=${@:3}
           ;;
         * )
+          force=false
           containers=${@:2}
           ;;
       esac
 
       cids=$(docker inspect --format='{{.Id}}' $containers)
-      dirnames=$(docker inspect --format='{{.Name}}' $containers)
 
       for cid in $cids; do
-        docker rm $force $cid
-      done
+        running=$(docker inspect --format='{{.State.Running}}' $cid)
+        if [ $running = true ]; then
+          dirname="wordpress"
+        else
+          dirname=$(docker inspect --format='{{.Name}}' $cid)
+          dirname=${cid:0:12}_${dirname#*/}
+        fi
 
-      for dirname in $dirnames; do
-        dirname=${dirname#*/}
-        rm -rf /home/core/data/${cid:0:12}_${dirname}
+        docker rm --force=${force} $cid
+        if [[ $force = true || $running = false ]]; then
+          rm -rf /home/core/data/${dirname}
+        fi
       done
 
       ;;
@@ -122,9 +129,14 @@ wocker() {
     'destroy' )
 
       for cid in $(docker ps -a -q); do
-        dirname=$(docker inspect --format='{{.Name}}' $cid)
-        dirname=${dirname#*/}
-        rm -rf /home/core/data/${cid:0:12}_${dirname}
+        running=$(docker inspect --format='{{.State.Running}}' $cid)
+        if [ $running = true ]; then
+          dirname="wordpress"
+        else
+          dirname=$(docker inspect --format='{{.Name}}' $cid)
+          dirname=${cid:0:12}_${dirname#*/}
+        fi
+        rm -rf /home/core/data/${dirname}
       done
 
       docker rm -f $(docker ps -a -q)
