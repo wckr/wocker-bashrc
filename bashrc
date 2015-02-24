@@ -66,9 +66,24 @@ wocker() {
 
       cid=$(docker inspect --format='{{.Id}}' $2)
       dirname=$(docker inspect --format='{{.Name}}' $2)
+      dirname=${dirname#*/}
 
       docker $1 $cid && \
-      mv /home/core/data/wordpress/ /home/core/data${dirname}
+      mv /home/core/data/wordpress /home/core/data/${cid:0:12}_${dirname}
+
+      ;;
+
+    #
+    # $ wocker start
+    #
+    'start' )
+
+      cid=$(docker inspect --format='{{.Id}}' $2)
+      dirname=$(docker inspect --format='{{.Name}}' $2)
+      dirname=${dirname#*/}
+
+      mv /home/core/data/${cid:0:12}_${dirname} /home/core/data/wordpress && \
+      docker start $cid
 
       ;;
 
@@ -77,12 +92,15 @@ wocker() {
     #
     'rm' )
 
-      if [[ "$2" = '-f' || "$2" = '--force' || "$2" = '--force=true' ]]; then
-        force='-f'
-        containers=${@:3}
-      else
-        containers=${@:2}
-      fi
+      case "$2" in
+        '-f' | '--force' | '--force=true' )
+          force='-f'
+          containers=${@:3}
+          ;;
+        * )
+          containers=${@:2}
+          ;;
+      esac
 
       cids=$(docker inspect --format='{{.Id}}' $containers)
       dirnames=$(docker inspect --format='{{.Name}}' $containers)
@@ -92,16 +110,21 @@ wocker() {
       done
 
       for dirname in $dirnames; do
-        rm -rf /home/core/data${dirname}
+        dirname=${dirname#*/}
+        rm -rf /home/core/data/${cid:0:12}_${dirname}
       done
 
       ;;
 
+    #
+    # $ wocker destroy
+    #
     'destroy' )
 
       for cid in $(docker ps -a -q); do
         dirname=$(docker inspect --format='{{.Name}}' $cid)
-        rm -rf /home/core/data${dirname}
+        dirname=${dirname#*/}
+        rm -rf /home/core/data/${cid:0:12}_${dirname}
       done
 
       docker rm -f $(docker ps -a -q)
