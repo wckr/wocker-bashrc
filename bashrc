@@ -7,7 +7,7 @@ wocker_usage() {
   echo '    rm [-f|--force] CONTAINER [CONTAINER...]    Remove one or more containers.'
   echo '                                                  [-f, --force]  Force the removal of a running container (uses SIGKILL)'
   echo '    run [--name=""] [IMAGE]                     Run a new container.'
-  echo '                                                  Default docker image: ixkaito/wocker:latest'
+  echo '                                                  Default docker image: wocker/wocker:latest'
   echo '    start CONTAINER                             Restart a stopped container.'
   echo '    stop CONTAINER                              Stop a running container by sending SIGTERM and then SIGKILL after a grace period.'
   echo '    version | --version | -v                    Show the Wocker version information.'
@@ -17,7 +17,7 @@ wocker() {
 
   local version='0.1'
   local red=31
-  local image='ixkaito/wocker:latest'
+  local image='wocker/wocker:latest'
   local name
   local ports
   local cid
@@ -53,7 +53,7 @@ wocker() {
       if [[ $ports =~ "HostIp:0.0.0.0 HostPort:80" ]]; then
         echo -e "\033[${red}mCannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
 
-      # Run a Wocker container named "wocker" using "ixkaito/wocker:latest" by default
+      # Run a Wocker container named "wocker" using "wocker/wocker:latest" by default
       elif [[ -f ~/data/wordpress/wp-config.php ]]; then
         docker run -d $name -p 80:80 -v ~/data/wordpress:/var/www/wordpress:rw $image
       else
