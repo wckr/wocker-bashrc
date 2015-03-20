@@ -15,7 +15,7 @@ wocker_usage() {
 
 wocker() {
 
-  local version='0.1'
+  local version='0.2'
   local red=31
   local image='wocker/wocker:latest'
   local name
@@ -137,6 +137,16 @@ wocker() {
           rm -rf ~/data/${dirname}
         fi
       done
+
+      ;;
+
+    #
+    # $ wocker update
+    #
+    'update' )
+
+      curl -O https://raw.githubusercontent.com/wckr/wocker-bashrc/master/bashrc && mv -f bashrc ~/.bashrc && source ~/.bashrc
+      docker pull wocker/wocker:latest
 
       ;;
 
