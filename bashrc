@@ -15,7 +15,7 @@ wocker_usage() {
 
 wocker() {
 
-  local version='0.1'
+  local version='0.1.1'
   local red=31
   local image='wocker/wocker:latest'
   local name
