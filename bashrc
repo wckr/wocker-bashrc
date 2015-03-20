@@ -141,6 +141,16 @@ wocker() {
       ;;
 
     #
+    # $ wocker update
+    #
+    'update' )
+
+      curl -O https://raw.githubusercontent.com/wckr/wocker-bashrc/master/bashrc && mv -f bashrc ~/.bashrc && source ~/.bashrc
+      docker pull wocker/wocker:latest
+
+      ;;
+
+    #
     # $ wocker destroy
     #
     'destroy' )
