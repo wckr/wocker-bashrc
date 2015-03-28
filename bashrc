@@ -83,46 +83,6 @@ wocker() {
       ;;
 
     #
-    # $ wocker stop | $ wocker kill
-    #
-    'stop' | 'kill' )
-
-      cid=$(docker inspect --format='{{.Id}}' $2)
-      dirname=$(docker inspect --format='{{.Name}}' $2)
-      dirname=${cid:0:12}_${dirname#*/}
-
-      docker $1 $cid && \
-      mv ~/data/wordpress ~/data/${dirname}
-
-      ;;
-
-    #
-    # $ wocker start
-    #
-    'start' )
-
-      cid=$(docker inspect --format='{{.Id}}' $2)
-      dirname=$(docker inspect --format='{{.Name}}' $2)
-      dirname=${cid:0:12}_${dirname#*/}
-
-      if [[ $(docker ps -q) ]]; then
-        ports=$(docker inspect --format='{{.NetworkSettings.Ports}}' $(docker ps -q))
-      fi
-
-      if [[ $ports =~ "HostIp:0.0.0.0 HostPort:80" ]]; then
-        echo -e "\033[${red}mCannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
-      elif [[ -f ~/data/wordpress/wp-config.php ]]; then
-        echo -e "\033[${red}mPlease move or delete current ~/data/wordpress directory before restarting a stopped container.\033[m"
-      elif [[ ! -f ~/data/${dirname}/wp-config.php ]]; then
-        echo -e "\033[${red}m~/data/${dirname}: No such directory or files.\033[m"
-      else
-        mv ~/data/${dirname} ~/data/wordpress && \
-        docker start $cid
-      fi
-
-      ;;
-
-    #
     # $ wocker rm
     #
     'rm' )
@@ -214,7 +174,7 @@ wocker() {
     #
     # Other Docker commands
     #
-    'attach' | 'build' | 'commit' | 'cp' | 'create' | 'diff' | 'events' | 'exec' | 'export' | 'history' | 'images' | 'import' | 'info' | 'inspect' | 'load' | 'login' | 'logout' | 'logs' | 'port' | 'pause' | 'ps' | 'pull' | 'push' | 'restart' | 'rmi' | 'save' | 'search' | 'tag' | 'top' | 'unpause' | 'wait' )
+    'attach' | 'build' | 'commit' | 'cp' | 'create' | 'diff' | 'events' | 'exec' | 'export' | 'history' | 'images' | 'import' | 'info' | 'inspect' | 'kill' | 'load' | 'login' | 'logout' | 'logs' | 'port' | 'pause' | 'ps' | 'pull' | 'push' | 'restart' | 'rmi' | 'save' | 'search' | 'start' | 'stop' | 'tag' | 'top' | 'unpause' | 'wait' )
       docker $@
       ;;
 
