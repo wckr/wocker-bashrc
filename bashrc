@@ -53,14 +53,22 @@ wocker() {
       if [[ $ports =~ "HostIp:0.0.0.0 HostPort:80" ]]; then
         echo -e "\033[${red}mCannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
 
-      # Run a Wocker container named "wocker" using "wocker/wocker:latest" by default
-      elif [[ -f ~/data/wordpress/wp-config.php ]]; then
-        docker run -d $name -p 80:80 -v ~/data/wordpress:/var/www/wordpress:rw $image
+      # Use existing WordPress files to run a container
+      elif [[ -f ~/data/${3}/wp-config.php ]]; then
+        docker run -d $name -p 80:80 -v ~/data/${name}:/var/www/wordpress:rw $image
+
+      # Or copy WordPress files from the image to run a container
       else
         docker run -d $name $image && \
-        docker cp $(docker ps -l -q):/var/www/wordpress ~/data && \
+        cid=$(docker inspect --format='{{.Id}}' $(docker ps -l -q)) && \
+        cid=${cid:0:12} && \
+        dirname=$(docker inspect --format='{{.Name}}' $(docker ps -l -q)) && \
+        dirname=${dirname#*/} && \
+        docker cp $(docker ps -l -q):/var/www/wordpress ~/data/${cid} && \
+        mv ~/data/${cid}/wordpress ~/data/${dirname} && \
+        rm -rf ~/data/${cid} && \
         docker rm -f $(docker ps -l -q) && \
-        docker run -d $name -p 80:80 -v ~/data/wordpress:/var/www/wordpress:rw $image
+        docker run -d --name $dirname -p 80:80 -v ~/data/${dirname}:/var/www/wordpress:rw $image
       fi
 
       ;;
