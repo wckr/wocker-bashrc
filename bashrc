@@ -135,13 +135,8 @@ wocker() {
         'y' )
           if [[ $(docker ps -a -q) ]]; then
             for cid in $(docker ps -a -q); do
-              running=$(docker inspect --format='{{.State.Running}}' $cid)
-              if [[ $running = true ]]; then
-                dirname="wordpress"
-              else
-                dirname=$(docker inspect --format='{{.Name}}' $cid)
-                dirname=${cid:0:12}_${dirname#*/}
-              fi
+              dirname=$(docker inspect --format='{{.Name}}' $cid)
+              dirname=${dirname#*/}
               rm -rf ~/data/${dirname}
             done
             docker rm -f $(docker ps -a -q)
