@@ -56,7 +56,7 @@ wocker() {
         echo -e "\033[${red}mCannot start container $cname: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
 
       # Use existing WordPress files to run a container
-      elif [[ $cname && -f ~/data/${cname}/wp-config.php ]]; then
+      elif [[ $cname && -d ~/data/${cname} ]]; then
         docker run -d --name $cname -p 80:80 -v ~/data/${cname}:/var/www/wordpress:rw $image
 
       # Or copy WordPress files from the image to run a container
