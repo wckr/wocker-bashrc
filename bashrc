@@ -19,6 +19,7 @@ wocker() {
   local red=31
   local image='wocker/wocker:latest'
   local name
+  local cname
   local ports
   local cid
   local cids
@@ -37,12 +38,13 @@ wocker() {
     'run' )
 
       if [[ "$2" = '--name' ]]; then
-        name="--name $3"
+        cname="$3"
         image=${4:-$image}
       elif [[ "$2" =~ ^--name=(.*)$ ]]; then
-        name="--name ${BASH_REMATCH[1]}"
+        cname="${BASH_REMATCH[1]}"
         image=${3:-$image}
       else
+        cname=""
         image=${2:-$image}
       fi
 
@@ -51,24 +53,31 @@ wocker() {
       fi
 
       if [[ $ports =~ "HostIp:0.0.0.0 HostPort:80" ]]; then
-        echo -e "\033[${red}mCannot start container $name: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
+        echo -e "\033[${red}mCannot start container $cname: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
 
       # Use existing WordPress files to run a container
-      elif [[ -f ~/data/${3}/wp-config.php ]]; then
-        docker run -d $name -p 80:80 -v ~/data/${name}:/var/www/wordpress:rw $image
+      elif [[ $cname && -f ~/data/${cname}/wp-config.php ]]; then
+        docker run -d --name $cname -p 80:80 -v ~/data/${cname}:/var/www/wordpress:rw $image
 
       # Or copy WordPress files from the image to run a container
       else
-        docker run -d $name $image && \
+
+        if [[ $cname ]]; then
+          docker run -d --name $cname $image
+        else
+          docker run -d $image
+        fi
+
         cid=$(docker inspect --format='{{.Id}}' $(docker ps -l -q)) && \
         cid=${cid:0:12} && \
         dirname=$(docker inspect --format='{{.Name}}' $(docker ps -l -q)) && \
         dirname=${dirname#*/} && \
+        cname=$dirname
         docker cp $(docker ps -l -q):/var/www/wordpress ~/data/${cid} && \
         mv ~/data/${cid}/wordpress ~/data/${dirname} && \
         rm -rf ~/data/${cid} && \
         docker rm -f $(docker ps -l -q) && \
-        docker run -d --name $dirname -p 80:80 -v ~/data/${dirname}:/var/www/wordpress:rw $image
+        docker run -d --name $cname -p 80:80 -v ~/data/${dirname}:/var/www/wordpress:rw $image
       fi
 
       ;;
