@@ -101,13 +101,9 @@ wocker() {
       cids=$(docker inspect --format='{{.Id}}' $containers)
 
       for cid in $cids; do
-        running=$(docker inspect --format='{{.State.Running}}' $cid)
-        if [[ $running = true ]]; then
-          dirname="wordpress"
-        else
-          dirname=$(docker inspect --format='{{.Name}}' $cid)
-          dirname=${cid:0:12}_${dirname#*/}
-        fi
+
+        dirname=$(docker inspect --format='{{.Name}}' $cid)
+        dirname=${dirname#*/}
 
         docker rm --force=${force} $cid
         if [[ $force = true || $running = false ]]; then
