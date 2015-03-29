@@ -128,24 +128,29 @@ wocker() {
     #
     'destroy' )
 
-      echo 'Are you sure you want to remove all containers and related files? [y/N]'
-      read confirmation
+      if [[ $(docker ps -a -q) ]]; then
 
-      case $confirmation in
-        'y' )
-          if [[ $(docker ps -a -q) ]]; then
+        echo 'Are you sure you want to remove all containers and related files? [y/N]'
+        read confirmation
+
+        case $confirmation in
+          'y' )
             for cid in $(docker ps -a -q); do
               dirname=$(docker inspect --format='{{.Name}}' $cid)
               dirname=${dirname#*/}
               rm -rf ~/data/${dirname}
             done
             docker rm -f $(docker ps -a -q)
-          fi
-          ;;
-        * )
-          echo 'Containers and file will not be removed, since the confirmation was declined.'
-          ;;
-      esac
+            ;;
+          * )
+            echo 'Containers and file will not be removed, since the confirmation was declined.'
+            ;;
+        esac
+
+      else
+        echo 'Nothing to destroy.'
+      fi
+
       ;;
 
     #
