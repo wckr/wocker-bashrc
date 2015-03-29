@@ -10,6 +10,7 @@ wocker_usage() {
   echo '                                                  Default docker image: wocker/wocker:latest'
   echo '    start CONTAINER                             Restart a stopped container.'
   echo '    stop CONTAINER                              Stop a running container by sending SIGTERM and then SIGKILL after a grace period.'
+  echo '    update                                      Update Wocker to the latest version.'
   echo '    version | --version | -v                    Show the Wocker version information.'
 }
 
