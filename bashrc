@@ -16,16 +16,14 @@ wocker_usage() {
 
 wocker() {
 
-  local version='0.2'
+  local version='0.3'
   local red=31
   local image='wocker/wocker:latest'
-  local name
   local cname
   local ports
   local cid
   local cids
   local dirname
-  local dirnames
   local containers
   local force
   local running
