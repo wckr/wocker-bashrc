@@ -100,7 +100,7 @@ wocker() {
       cids=$(docker inspect --format='{{.Id}}' $containers)
 
       for cid in $cids; do
-
+        running=$(docker inspect --format='{{.State.Running}}' $cid)
         dirname=$(docker inspect --format='{{.Name}}' $cid)
         dirname=${dirname#*/}
 
