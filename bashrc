@@ -155,7 +155,7 @@ wocker() {
     #
     # $ wocker --help | $ wocker -h
     #
-    '--help' | '-h' )
+    'help' | '--help' | '-h' )
       wocker_usage
       ;;
 
