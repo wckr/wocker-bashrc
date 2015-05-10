@@ -1,17 +1,53 @@
 wocker_usage() {
-  echo 'Usage: wocker COMMAND'
-  echo ''
-  echo 'Commands:'
-  echo '    destroy                                     Force remove all containers and related files.'
-  echo '    kill CONTAINER                              Kill a running container using SIGKILL or a specified signal.'
-  echo '    rm [-f|--force] CONTAINER [CONTAINER...]    Remove one or more containers.'
-  echo '                                                  [-f, --force]  Force the removal of a running container (uses SIGKILL)'
-  echo '    run [--name=""] [IMAGE]                     Run a new container.'
-  echo '                                                  Default docker image: wocker/wocker:latest'
-  echo '    start CONTAINER                             Restart a stopped container.'
-  echo '    stop CONTAINER                              Stop a running container by sending SIGTERM and then SIGKILL after a grace period.'
-  echo '    update                                      Update Wocker to the latest version.'
-  echo '    version | --version | -v                    Show the Wocker version information.'
+  echo "Usage: wocker COMMAND [arg...]"
+  echo ""
+  echo "Commands:"
+  echo "    attach      Attach to a running container (Docker alias)"
+  echo "    build       Build an image from a Dockerfile (Docker alias)"
+  echo "    commit      Create a new image from a container's changes (Docker alias)"
+  echo "    cp          Copy files/folders from a container's filesystem to the host path (Docker alias)"
+  echo "    create      Create a new container (Docker alias)"
+  echo "    destroy     Force remove all containers and related files"
+  echo "    diff        Inspect changes on a container's filesystem (Docker alias)"
+  echo "    events      Get real time events from the server (Docker alias)"
+  echo "    exec        Run a command in a running container (Docker alias)"
+  echo "    export      Stream the contents of a container as a tar archive (Docker alias)"
+  echo "    help        Show this help"
+  echo "    --help"
+  echo "    -h"
+  echo "    history     Show the history of an image (Docker alias)"
+  echo "    images      List images (Docker alias)"
+  echo "    import      Create a new filesystem image from the contents of a tarball (Docker alias)"
+  echo "    info        Display system-wide information (Docker alias)"
+  echo "    inspect     Return low-level information on a container or image (Docker alias)"
+  echo "    kill        Kill a running container (Docker alias)"
+  echo "    load        Load an image from a tar archive (Docker alias)"
+  echo "    login       Register or log in to a Docker registry server (Docker alias)"
+  echo "    logout      Log out from a Docker registry server (Docker alias)"
+  echo "    logs        Fetch the logs of a container (Docker alias)"
+  echo "    port        Lookup the public-facing port that is NAT-ed to PRIVATE_PORT (Docker alias)"
+  echo "    pause       Pause all processes within a container (Docker alias)"
+  echo "    ps          List containers (Docker alias)"
+  echo "    pull        Pull an image or a repository from a Docker registry server (Docker alias)"
+  echo "    push        Push an image or a repository to a Docker registry server (Docker alias)"
+  echo "    rename      Rename an existing container (Docker alias)"
+  echo "    restart     Restart a running container (Docker alias)"
+  echo "    rm          Remove one or more containers"
+  echo "    rmi         Remove one or more images (Docker alias)"
+  echo "    run         Run a command in a new container"
+  echo "    save        Save an image to a tar archive (Docker alias)"
+  echo "    search      Search for an image on the Docker Hub (Docker alias)"
+  echo "    start       Start a stopped container (Docker alias)"
+  echo "    stats       Display a live stream of one or more containers' resource usage statistics (Docker alias)"
+  echo "    stop        Stop a running container (Docker alias)"
+  echo "    tag         Tag an image into a repository (Docker alias)"
+  echo "    top         Lookup the running processes of a container (Docker alias)"
+  echo "    unpause     Unpause a paused container (Docker alias)"
+  echo "    update      Update Wocker to the latest version"
+  echo "    version     Show the Wocker version information"
+  echo "    --version"
+  echo "    -v"
+  echo "    wait        Block until a container stops, then print its exit code (Docker alias)"
 }
 
 wocker() {
