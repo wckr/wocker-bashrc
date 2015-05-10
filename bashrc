@@ -16,7 +16,7 @@ wocker_usage() {
 
 wocker() {
 
-  local version='0.3.1'
+  local version='0.3.2'
   local red=31
   local image='wocker/wocker:latest'
   local cname
