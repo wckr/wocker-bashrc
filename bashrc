@@ -59,6 +59,14 @@ wocker_run_usage() {
   echo '  IMAGE[:TAG]   Docker image. If omitted, it will be wocker/wocker:latest.'
 }
 
+wocker_rm_usage() {
+  echo 'Usage: wocker rm [--force=false] CONTAINER [CONTAINER...]'
+  echo ''
+  echo 'Remove one or more containers'
+  echo ''
+  echo '  -f, --force=false   Force the removal of a running container (uses SIGKILL)'
+}
+
 wocker() {
 
   local version='0.3.3'
