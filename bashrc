@@ -7,7 +7,7 @@ wocker_usage() {
   echo "    commit      Create a new image from a container's changes (Docker alias)"
   echo "    cp          Copy files/folders from a container's filesystem to the host path (Docker alias)"
   echo "    create      Create a new container (Docker alias)"
-  echo "    destroy     Force remove all containers and related files"
+  echo "    destroy     Force remove all containers and local related files"
   echo "    diff        Inspect changes on a container's filesystem (Docker alias)"
   echo "    events      Get real time events from the server (Docker alias)"
   echo "    exec        Run a command in a running container (Docker alias)"
@@ -65,6 +65,24 @@ wocker_rm_usage() {
   echo 'Remove one or more containers'
   echo ''
   echo '  -f, --force=false   Force the removal of a running container (uses SIGKILL)'
+}
+
+wocker_update_usage() {
+  echo 'Usage: wocker update'
+  echo ''
+  echo 'Update the command line and the Docker image of Wocker.'
+}
+
+wocker_version_usage() {
+  echo 'Usage: wocker version | --version | -v'
+  echo ''
+  echo 'Show the Wocker version information'
+}
+
+wocker_destroy_usage() {
+  echo 'Usage: wocker destroy'
+  echo ''
+  echo 'Force remove all containers and local related files'
 }
 
 wocker() {
