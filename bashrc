@@ -50,6 +50,15 @@ wocker_usage() {
   echo "    wait        Block until a container stops, then print its exit code (Docker alias)"
 }
 
+wocker_run_usage() {
+  echo 'Usage: wocker run [--name=""] [IMAGE[:TAG]]'
+  echo ''
+  echo 'Run a new container'
+  echo ''
+  echo '  --name=""     Assign a name to the container. If omitted, it will be a random name.'
+  echo '  IMAGE[:TAG]   Docker image. If omitted, it will be wocker/wocker:latest.'
+}
+
 wocker() {
 
   local version='0.3.3'
