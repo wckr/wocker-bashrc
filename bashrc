@@ -107,49 +107,54 @@ wocker() {
     #
     'run' )
 
-      if [[ "$2" = '--name' ]]; then
-        cname="$3"
-        image=${4:-$image}
-      elif [[ "$2" =~ ^--name=(.*)$ ]]; then
-        cname="${BASH_REMATCH[1]}"
-        image=${3:-$image}
-      else
-        cname=""
-        image=${2:-$image}
-      fi
-
-      if [[ $(docker ps -q) ]]; then
-        ports=$(docker inspect --format='{{.NetworkSettings.Ports}}' $(docker ps -q))
-      fi
-
-      if [[ $ports =~ "HostIp:0.0.0.0 HostPort:80" ]]; then
-        echo -e "\033[${red}mCannot start container $cname: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
-
-      # Use existing WordPress files to run a container
-      elif [[ $cname && -d ~/data/${cname} ]]; then
-        docker run -d --name $cname -p 80:80 -v ~/data/${cname}:/var/www/wordpress:rw $image
-
-      # Or copy WordPress files from the image to run a container
+      if [[ "$2" = '--help' ]]; then
+        wocker_run_usage
       else
 
-        if [[ $cname ]]; then
-          docker run -d --name $cname $image
+        if [[ "$2" = '--name' ]]; then
+          cname="$3"
+          image=${4:-$image}
+        elif [[ "$2" =~ ^--name=(.*)$ ]]; then
+          cname="${BASH_REMATCH[1]}"
+          image=${3:-$image}
         else
-          docker run -d $image
+          cname=""
+          image=${2:-$image}
         fi
 
-        cid=$(docker inspect --format='{{.Id}}' $(docker ps -l -q)) && \
-        cid=${cid:0:12} && \
-        dirname=$(docker inspect --format='{{.Name}}' $(docker ps -l -q)) && \
-        dirname=${dirname#*/} && \
-        cname=$dirname
-        docker cp $(docker ps -l -q):/var/www/wordpress ~/data/${cid} && \
-        mv ~/data/${cid}/wordpress ~/data/${dirname} && \
-        rm -rf ~/data/${cid} && \
-        docker rm -f $(docker ps -l -q) && \
-        docker run -d --name $cname -p 80:80 -v ~/data/${dirname}:/var/www/wordpress:rw $image
-      fi
+        if [[ $(docker ps -q) ]]; then
+          ports=$(docker inspect --format='{{.NetworkSettings.Ports}}' $(docker ps -q))
+        fi
 
+        if [[ $ports =~ "HostIp:0.0.0.0 HostPort:80" ]]; then
+          echo -e "\033[${red}mCannot start container $cname: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
+
+        # Use existing WordPress files to run a container
+        elif [[ $cname && -d ~/data/${cname} ]]; then
+          docker run -d --name $cname -p 80:80 -v ~/data/${cname}:/var/www/wordpress:rw $image
+
+        # Or copy WordPress files from the image to run a container
+        else
+
+          if [[ $cname ]]; then
+            docker run -d --name $cname $image
+          else
+            docker run -d $image
+          fi
+
+          cid=$(docker inspect --format='{{.Id}}' $(docker ps -l -q)) && \
+          cid=${cid:0:12} && \
+          dirname=$(docker inspect --format='{{.Name}}' $(docker ps -l -q)) && \
+          dirname=${dirname#*/} && \
+          cname=$dirname
+          docker cp $(docker ps -l -q):/var/www/wordpress ~/data/${cid} && \
+          mv ~/data/${cid}/wordpress ~/data/${dirname} && \
+          rm -rf ~/data/${cid} && \
+          docker rm -f $(docker ps -l -q) && \
+          docker run -d --name $cname -p 80:80 -v ~/data/${dirname}:/var/www/wordpress:rw $image
+        fi
+
+      fi
       ;;
 
     #
@@ -157,30 +162,35 @@ wocker() {
     #
     'rm' )
 
-      case "$2" in
-        '-f' | '--force' | '--force=true' )
-          force=true
-          containers=${@:3}
-          ;;
-        * )
-          force=false
-          containers=${@:2}
-          ;;
-      esac
+      if [[ "$2" = '--help' ]]; then
+        wocker_rm_usage
+      else
 
-      cids=$(docker inspect --format='{{.Id}}' $containers)
+        case "$2" in
+          '-f' | '--force' | '--force=true' )
+            force=true
+            containers=${@:3}
+            ;;
+          * )
+            force=false
+            containers=${@:2}
+            ;;
+        esac
 
-      for cid in $cids; do
-        running=$(docker inspect --format='{{.State.Running}}' $cid)
-        dirname=$(docker inspect --format='{{.Name}}' $cid)
-        dirname=${dirname#*/}
+        cids=$(docker inspect --format='{{.Id}}' $containers)
 
-        docker rm --force=${force} $cid
-        if [[ $force = true || $running = false ]]; then
-          rm -rf ~/data/${dirname}
-        fi
-      done
+        for cid in $cids; do
+          running=$(docker inspect --format='{{.State.Running}}' $cid)
+          dirname=$(docker inspect --format='{{.Name}}' $cid)
+          dirname=${dirname#*/}
 
+          docker rm --force=${force} $cid
+          if [[ $force = true || $running = false ]]; then
+            rm -rf ~/data/${dirname}
+          fi
+        done
+
+      fi
       ;;
 
     #
@@ -188,9 +198,12 @@ wocker() {
     #
     'update' )
 
-      curl -O https://raw.githubusercontent.com/wckr/wocker-bashrc/master/bashrc && mv -f bashrc ~/.bashrc && source ~/.bashrc
-      docker pull wocker/wocker:latest
-
+      if [[ "$2" = '--help' ]]; then
+        wocker_update_usage
+      else
+        curl -O https://raw.githubusercontent.com/wckr/wocker-bashrc/master/bashrc && mv -f bashrc ~/.bashrc && source ~/.bashrc
+        docker pull wocker/wocker:latest
+      fi
       ;;
 
     #
@@ -198,29 +211,34 @@ wocker() {
     #
     'destroy' )
 
-      if [[ $(docker ps -a -q) ]]; then
-
-        echo 'Are you sure you want to remove all containers and related files? [y/N]'
-        read confirmation
-
-        case $confirmation in
-          'y' )
-            for cid in $(docker ps -a -q); do
-              dirname=$(docker inspect --format='{{.Name}}' $cid)
-              dirname=${dirname#*/}
-              rm -rf ~/data/${dirname}
-            done
-            docker rm -f $(docker ps -a -q)
-            ;;
-          * )
-            echo 'Containers and file will not be removed, since the confirmation was declined.'
-            ;;
-        esac
-
+      if [[ "$2" = '--help' ]]; then
+        wocker_destroy_usage
       else
-        echo 'Nothing to destroy.'
-      fi
 
+        if [[ $(docker ps -a -q) ]]; then
+
+          echo 'Are you sure you want to remove all containers and related files? [y/N]'
+          read confirmation
+
+          case $confirmation in
+            'y' )
+              for cid in $(docker ps -a -q); do
+                dirname=$(docker inspect --format='{{.Name}}' $cid)
+                dirname=${dirname#*/}
+                rm -rf ~/data/${dirname}
+              done
+              docker rm -f $(docker ps -a -q)
+              ;;
+            * )
+              echo 'Containers and file will not be removed, since the confirmation was declined.'
+              ;;
+          esac
+
+        else
+          echo 'Nothing to destroy.'
+        fi
+
+      fi
       ;;
 
     #
@@ -234,7 +252,11 @@ wocker() {
     # $ wocker version | $ wocker --version | $ wocker -v
     #
     'version' | '--version' | '-v' )
-      echo "Version: $version"
+      if [[ "$2" = '--help' ]]; then
+        wocker_version_usage
+      else
+        echo "Version: $version"
+      fi
       ;;
 
     #
