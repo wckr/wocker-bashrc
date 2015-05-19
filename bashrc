@@ -85,6 +85,12 @@ wocker_destroy_usage() {
   echo 'Force remove all containers and local related files'
 }
 
+wocker_wp_usage() {
+  echo 'Usage: wocker wp'
+  echo ''
+  echo 'Execute WP-CLI commands in the running container'
+}
+
 wocker() {
 
   local version='0.4.0'
@@ -258,6 +264,23 @@ wocker() {
         echo "Version: $version"
       fi
       ;;
+
+    #
+    # $ wocker wp
+    #
+    'wp' )
+
+      if [[ "$2" = '--help' ]]; then
+        wocker_wp_usage
+      else
+        if [[ $(docker ps -q) ]]; then
+          cid=$(docker ps -q)
+          if [[ ! $cid =~ $'\n' ]]; then
+            docker exec $cid wp --allow-root ${@:2}
+          fi
+        fi
+      fi
+    ;;
 
     #
     # Other Docker commands
