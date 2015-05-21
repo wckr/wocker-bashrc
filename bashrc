@@ -106,7 +106,7 @@ wocker_wp_usage() {
   echo '    import          Import content from a WXR file.'
   echo '    media           Manage attachments.'
   echo '    menu            List, create, assign, and delete menus'
-  echo '    network'
+  echo '    network         -'
   echo '    option          Manage options.'
   echo '    plugin          Manage plugins.'
   echo '    post            Manage posts.'
@@ -127,7 +127,7 @@ wocker_wp_usage() {
 
 wocker() {
 
-  local version='0.4.0'
+  local version='0.5.0'
   local red=31
   local image='wocker/wocker:latest'
   local cname
