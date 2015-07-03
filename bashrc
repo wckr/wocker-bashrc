@@ -139,6 +139,7 @@ wocker() {
   local force
   local running
   local confirmation
+  local theme_test_data_url
 
   case "$1" in
 
@@ -241,7 +242,7 @@ wocker() {
       if [[ "$2" = '--help' ]]; then
         wocker_update_usage
       else
-        curl -O https://raw.githubusercontent.com/wckr/wocker-bashrc/master/bashrc && mv -f bashrc ~/.bashrc && source ~/.bashrc
+        curl -OL https://raw.githubusercontent.com/wckr/wocker-bashrc/master/bashrc && mv -f bashrc ~/.bashrc && source ~/.bashrc
         docker pull wocker/wocker:latest
       fi
       ;;
@@ -314,7 +315,35 @@ wocker() {
           fi
         fi
       fi
-    ;;
+      ;;
+
+    #
+    # $ wocker theme-test
+    #
+    'theme-test' )
+
+      case "$2" in
+
+        'ja' )
+          theme_test_data_url='https://raw.githubusercontent.com/jawordpressorg/theme-test-data-ja/master/wordpress-theme-test-date-ja.xml'
+          ;;
+
+        * )
+          theme_test_data_url='https://wpcom-themes.svn.automattic.com/demo/theme-unit-test-data.xml'
+          ;;
+
+      esac
+
+      if [[ $(docker ps -q) ]]; then
+        cid=$(docker ps -q)
+        if [[ ! $cid =~ $'\n' ]]; then
+          docker exec $cid curl -OL $theme_test_data_url \
+          && docker exec $cid wp --allow-root plugin install wordpress-importer --activate \
+          && docker exec $cid wp --allow-root import ${theme_test_data_url##*/} --authors=create \
+          && docker exec $cid rm ${theme_test_data_url##*/}
+        fi
+      fi
+      ;;
 
     #
     # Other Docker commands
