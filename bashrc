@@ -41,6 +41,7 @@ wocker_usage() {
   echo "    stats       Display a live stream of one or more containers' resource usage statistics (Docker alias)"
   echo "    stop        Stop a running container (Docker alias)"
   echo "    tag         Tag an image into a repository (Docker alias)"
+  echo "    theme-test  Import theme unit test data"
   echo "    top         Lookup the running processes of a container (Docker alias)"
   echo "    unpause     Unpause a paused container (Docker alias)"
   echo "    update      Update Wocker to the latest version"
@@ -123,6 +124,14 @@ wocker_wp_usage() {
   echo '    transient       Manage transients.'
   echo '    user            Manage users.'
   echo '    widget          Manage sidebar widgets.'
+}
+
+wocker_theme_test_usage() {
+  echo 'Usage: wocker theme-test [LOCALE]'
+  echo ''
+  echo 'Import theme unit test data'
+  echo ''
+  echo '  LOCALE    Select which language you want to import. `en` and `ja` are available. If omitted, `en` will be imported.'
 }
 
 wocker() {
@@ -322,26 +331,29 @@ wocker() {
     #
     'theme-test' )
 
-      case "$2" in
+      if [[ "$2" = '--help' ]]; then
+        wocker_theme_test_usage
+      else
 
-        'ja' )
-          theme_test_data_url='https://raw.githubusercontent.com/jawordpressorg/theme-test-data-ja/master/wordpress-theme-test-date-ja.xml'
-          ;;
+        case "$2" in
+          'ja' )
+            theme_test_data_url='https://raw.githubusercontent.com/jawordpressorg/theme-test-data-ja/master/wordpress-theme-test-date-ja.xml'
+            ;;
+          'en' | * )
+            theme_test_data_url='https://wpcom-themes.svn.automattic.com/demo/theme-unit-test-data.xml'
+            ;;
+        esac
 
-        * )
-          theme_test_data_url='https://wpcom-themes.svn.automattic.com/demo/theme-unit-test-data.xml'
-          ;;
-
-      esac
-
-      if [[ $(docker ps -q) ]]; then
-        cid=$(docker ps -q)
-        if [[ ! $cid =~ $'\n' ]]; then
-          docker exec $cid curl -OL $theme_test_data_url \
-          && docker exec $cid wp --allow-root plugin install wordpress-importer --activate \
-          && docker exec $cid wp --allow-root import ${theme_test_data_url##*/} --authors=create \
-          && docker exec $cid rm ${theme_test_data_url##*/}
+        if [[ $(docker ps -q) ]]; then
+          cid=$(docker ps -q)
+          if [[ ! $cid =~ $'\n' ]]; then
+            docker exec $cid curl -OL $theme_test_data_url \
+            && docker exec $cid wp --allow-root plugin install wordpress-importer --activate \
+            && docker exec $cid wp --allow-root import ${theme_test_data_url##*/} --authors=create \
+            && docker exec $cid rm ${theme_test_data_url##*/}
+          fi
         fi
+
       fi
       ;;
 
