@@ -127,7 +127,7 @@ wocker_wp_usage() {
 
 wocker() {
 
-  local version='0.5.0'
+  local version='0.6.0'
   local red=31
   local image='wocker/wocker:latest'
   local cname
