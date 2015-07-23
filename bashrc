@@ -134,6 +134,14 @@ wocker_theme_test_usage() {
   echo '  LOCALE    Select which language you want to import. `en` and `ja` are available. If omitted, `en` will be imported.'
 }
 
+wocker_theme_review_usage() {
+  echo 'Usage: wocker theme-review [LOCALE]'
+  echo ''
+  echo 'Set up environment for theme review'
+  echo ''
+  echo '  LOCALE    Select which language you want to import. `en` and `ja` are available. If omitted, `en` will be imported.'
+}
+
 wocker() {
 
   local version='0.6.0'
@@ -349,6 +357,45 @@ wocker() {
           if [[ ! $cid =~ $'\n' ]]; then
             docker exec $cid curl -OL $theme_test_data_url \
             && docker exec $cid wp --allow-root plugin install wordpress-importer --activate \
+            && docker exec $cid wp --allow-root import ${theme_test_data_url##*/} --authors=create \
+            && docker exec $cid rm ${theme_test_data_url##*/}
+          fi
+        fi
+
+      fi
+      ;;
+
+    #
+    # $ wocker theme-test
+    #
+    'theme-review' )
+
+      if [[ "$2" = '--help' ]]; then
+        wocker_theme_review_usage
+      else
+
+        case "$2" in
+          'ja' )
+            theme_test_data_url='https://raw.githubusercontent.com/jawordpressorg/theme-test-data-ja/master/wordpress-theme-test-date-ja.xml'
+            ;;
+          'en' | * )
+            theme_test_data_url='https://wpcom-themes.svn.automattic.com/demo/theme-unit-test-data.xml'
+            ;;
+        esac
+
+        if [[ $(docker ps -q) ]]; then
+          cid=$(docker ps -q)
+          if [[ ! $cid =~ $'\n' ]]; then
+            docker exec $cid curl -OL $theme_test_data_url \
+            && docker exec $cid wp --allow-root plugin install \
+              wordpress-importer \
+              theme-check \
+              debug-bar \
+              log-deprecated-notices \
+              monster-widget \
+              wordpress-beta-tester \
+              regenerate-thumbnails \
+              --activate \
             && docker exec $cid wp --allow-root import ${theme_test_data_url##*/} --authors=create \
             && docker exec $cid rm ${theme_test_data_url##*/}
           fi
