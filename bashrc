@@ -320,7 +320,11 @@ wocker() {
         if [[ $(docker ps -q) ]]; then
           cid=$(docker ps -q)
           if [[ ! $cid =~ $'\n' ]]; then
-            docker exec $cid wp --allow-root ${@:2}
+            if [[ "$2" = 'shell' ]]; then
+              docker exec -it $cid wp --allow-root ${@:2}
+            else
+              docker exec $cid wp --allow-root ${@:2}
+            fi
           fi
         fi
       fi
