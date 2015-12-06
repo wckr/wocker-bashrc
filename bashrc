@@ -197,7 +197,7 @@ wocker() {
           dirname=$(docker inspect --format='{{.Name}}' $(docker ps -l -q)) && \
           dirname=${dirname#*/} && \
           cname=$dirname
-          docker cp $(docker ps -l -q):/var/www/wordpress ~/data/${cid} && \
+          docker cp $(docker ps -l -q):/var/www/wordpress ~/data/${cid}/ && \
           mv ~/data/${cid}/wordpress ~/data/${dirname} && \
           rm -rf ~/data/${cid} && \
           docker rm -f $(docker ps -l -q) && \
