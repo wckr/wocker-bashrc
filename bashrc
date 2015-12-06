@@ -136,7 +136,7 @@ wocker_theme_test_usage() {
 
 wocker() {
 
-  local version='0.9.1'
+  local version='0.9.2'
   local red=31
   local image='wocker/wocker:latest'
   local cname
