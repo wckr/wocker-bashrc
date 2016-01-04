@@ -141,7 +141,7 @@ wocker_theme_test_usage() {
 
 wocker() {
 
-  local WOCKER_VERSION='0.9.1'
+  local WOCKER_VERSION='0.9.2'
   local WORDPRESS_VERSION='4.4'
   local RED=31
 
@@ -184,7 +184,7 @@ wocker() {
         fi
 
         if [[ $ports =~ "HostIp:0.0.0.0 HostPort:80" ]]; then
-          echo -e "\033[${red}mCannot start container $cname: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
+          echo -e "\033[${RED}mCannot start container $cname: Bind for 0.0.0.0:80 failed: port is already allocated\033[m"
 
         # Use existing WordPress files to run a container
         elif [[ $cname && -d ~/data/${cname} ]]; then
@@ -203,7 +203,8 @@ wocker() {
           cid=${cid:0:12} && \
           dirname=$(docker inspect --format='{{.Name}}' $(docker ps -l -q)) && \
           dirname=${dirname#*/} && \
-          cname=$dirname
+          cname=$dirname && \
+          mkdir ~/data/${cid}
           docker cp $(docker ps -l -q):/var/www/wordpress ~/data/${cid} && \
           mv ~/data/${cid}/wordpress ~/data/${dirname} && \
           rm -rf ~/data/${cid} && \
