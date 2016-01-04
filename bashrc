@@ -80,6 +80,11 @@ wocker_version_usage() {
   echo 'Show the Wocker version information'
 }
 
+wocker_version_info() {
+  echo "Wocker version: $WOCKER_VERSION"
+  echo "WordPress $WORDPRESS_VERSION"
+}
+
 wocker_destroy_usage() {
   echo 'Usage: wocker destroy'
   echo ''
@@ -136,8 +141,10 @@ wocker_theme_test_usage() {
 
 wocker() {
 
-  local version='0.9.1'
-  local red=31
+  local WOCKER_VERSION='0.9.1'
+  local WORDPRESS_VERSION='4.4'
+  local RED=31
+
   local image='wocker/wocker:latest'
   local cname
   local ports
@@ -253,6 +260,7 @@ wocker() {
       else
         curl -OL https://raw.githubusercontent.com/wckr/wocker-bashrc/master/bashrc && mv -f bashrc ~/.bashrc && source ~/.bashrc
         docker pull wocker/wocker:latest
+        wocker_version_info
       fi
       ;;
 
@@ -305,7 +313,7 @@ wocker() {
       if [[ "$2" = '--help' ]]; then
         wocker_version_usage
       else
-        echo "Version: $version"
+        wocker_version_info
       fi
       ;;
 
